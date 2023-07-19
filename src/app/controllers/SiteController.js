@@ -1,9 +1,21 @@
 // Tạo ra dành cho những page không có tác vụ cụ thể 
 // vd: Home, search, contract,...
+const Course = require('../models/Course');
+const { mutipleMongooseToObject } = require('../../util/mongoose');
+
 class SiteController {
 
-    index(req, res) {
-        res.render('home');
+    async index(req, res, next) {
+        try {
+            await Course.find({})
+                        .then(courses => {
+                            res.render('home', {courses: mutipleMongooseToObject(courses)});
+                        })
+                        .catch(err => next(err));
+
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
     };
 
     search(req, res) {
